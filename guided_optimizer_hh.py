@@ -41,7 +41,7 @@ class Guided_Optimizer():
         self.diagnostic_mode = kwargs.get('diagnostic_mode', False)
         self.minSBevnts = kwargs.get('minSBevents',5.)
         self.mvas   =   kwargs.get('mvas', { "1d" : ["mva_score"], "2d" : ["mva_smhiggs_score", "mva_nonres_score"] }) 
-        self.weigth_var = kwargs.get('weight_var',"weigth")
+        self.weight_var = kwargs.get('weight_var',"weight")
         self.n_bins =   kwargs.get('n_bins', [1, 2, 3, 4]) 
         self.strategies = kwargs.get('strategies', ['random', 'guided'])
 
@@ -282,7 +282,11 @@ class Guided_Optimizer():
         self.model = self.mlp(n_cuts, self.dnn_config)
 
     def bdt_regressor(self, n_cuts, config):
-        return xgboost.XGBRegressor()
+        return xgboost.XGBRegressor( n_estimators=100,
+                                     learning_rate=0.1,
+                                     max_depth=6,
+                                     early_stopping_rounds=5, 
+                                     eval_metric='mae')
 
     def train_mva(self, X, y):
         if self.mva == "dnn":
@@ -297,7 +301,7 @@ class Guided_Optimizer():
         X_test = pandas.DataFrame(data = X_test)
 
         eval_list = [(X_test, y_test)]
-        self.bdt.fit(X_train, y_train, early_stopping_rounds=5, eval_metric='mae', eval_set = eval_list)
+        self.bdt.fit(X_train, y_train, eval_set = eval_list)
 
         pred_test = self.bdt.predict(X_test)
 

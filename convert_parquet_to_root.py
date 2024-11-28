@@ -11,6 +11,7 @@ parser.add_argument("--input", help = "input parquet file", type=str, required=T
 parser.add_argument("--out_dir", help = "output directory", type=str, default = f"/ceph/cms/store/user/{usr}/SRopt/")
 parser.add_argument("--out_name", help = "output filename, without extension", type=str, default = None)
 parser.add_argument("--slim", help = "output file contains minimal branches", action="store_true", default = True)
+parser.add_argument("--verbose", help = "output file contains minimal branches", action="store_true", default = False)
 args = parser.parse_args()
 
 """
@@ -42,7 +43,8 @@ def to_tensor(dataframe, columns = [], dtypes = {}):
         dtype = dtype_dict)
     # Insert values from dataframe columns into numpy labels
     for col in columns:
-        print(f"column {col} input shape {numpy_buffer[col].shape} output shape {dataframe[col].to_numpy().shape}")
+        if args.verbose:
+           print(f"column {col} input shape {numpy_buffer[col].shape} output shape {dataframe[col].to_numpy().shape}")
         numpy_buffer[col] = dataframe[col].to_numpy()
     # Return results of conversion
     return numpy_buffer
@@ -74,6 +76,7 @@ if args.slim: # Slimming by defaut. It's good for you + NW parquet conversion no
     events = events[[f for f in events.fields if f in needed_fields]]
     print("[Parquet2root] Done with the slimming")
 
+#square down parquet dataframes before exporting to root
 events = to_tensor(events)
 
 if args.out_name is None:
@@ -83,3 +86,5 @@ else:
 
 with uproot.recreate(output_root) as f:
   f["t"] = events
+  
+print("[Parquet2root] All good")

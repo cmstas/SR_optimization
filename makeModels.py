@@ -1,6 +1,6 @@
 import ROOT
 ROOT.gROOT.SetBatch(True)
-from plotting.tdrStyle import *
+from tdrStyle import *
 setTDRStyle()
 
 ROOT.gSystem.AddIncludePath("-I$COMBINE_BASE/ ")
