@@ -1,6 +1,8 @@
 import ROOT
 
 ROOT.gROOT.SetBatch(True)
+
+ROOT.gSystem.AddIncludePath("-I$COMBINE_BASE/ ")
 ROOT.gSystem.Load("$COMBINE_BASE/build/lib/libHiggsAnalysisCombinedLimit.so")
 ROOT.RooMsgService.instance().getStream(1).removeTopic(ROOT.RooFit.DataHandling)
 ROOT.RooMsgService.instance().getStream(1).removeTopic(ROOT.RooFit.ObjectHandling)

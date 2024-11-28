@@ -7,6 +7,7 @@ import numpy
 import uproot
 import subprocess
 
+ROOT.gSystem.AddIncludePath("-I$COMBINE_BASE/ ")
 ROOT.gSystem.Load("$COMBINE_BASE/build/lib/libHiggsAnalysisCombinedLimit.so")
 ROOT.gSystem.AddIncludePath("-I$ROOFITSYS/include")
 ROOT.gSystem.AddIncludePath("-Iinclude/")

@@ -5,8 +5,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--tag", help = "tag to distinguish this optimization", type=str, default = "test")
 parser.add_argument("--file", help = "path to final fit tree", type=str)
 parser.add_argument("--coupling", help = "which signal you want", type=str)
-parser.add_argument("--mvas", help = "list of mvas for SR optimization",type=str, default = "mva_score")
-parser.add_argument("--weigth", help = "name of the weight field to be used",type=str, default = "weight")
+parser.add_argument("--mvas", help = "csv list of mvas for SR optimization",type=str, default = "mva_score")
+parser.add_argument("--weight", help = "name of the weight field to be used",type=str, default = "weight")
 parser.add_argument("--sm_higgs_unc", help = "value of unc on sm higgs processes", type=float, default = 0.1)
 parser.add_argument("--nCores", help = "number of cores to use", type=int, default = 18)
 parser.add_argument("--minSB_events", help = "minimum number of events in mgg sideband", type=float, default = 5.)
@@ -48,7 +48,7 @@ optimizer = guided_optimizer.Guided_Optimizer(
 
                 n_bins = bins,
                 mvas = mva_dict,
-                weight_var = args.weight_var,
+                weight_var = args.weight,
                 strategies = ['guided'],
                 minSBevents = args.minSB_events,
                 diagnostic_mode=args.dry_run,

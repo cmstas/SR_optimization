@@ -2,11 +2,13 @@ import numpy
 import awkward as ak
 import uproot
 import sys
+import getpass
 
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument("--input", help = "input parquet file", type=str, default = "/ceph/cms/store/user/azecchin/ScoredParquet/fitted_pq_dnns.parquet")
-parser.add_argument("--out_dir", help = "output directory", type=str, default = "/ceph/cms/store/user/azecchin/SRopt")
+usr=getpass.getuser()
+parser.add_argument("--input", help = "input parquet file", type=str, required=True)
+parser.add_argument("--out_dir", help = "output directory", type=str, default = f"/ceph/cms/store/user/{usr}/SRopt/")
 parser.add_argument("--out_name", help = "output filename, without extension", type=str, default = None)
 parser.add_argument("--slim", help = "output file contains minimal branches", action="store_true", default = True)
 args = parser.parse_args()
@@ -39,10 +41,9 @@ def to_tensor(dataframe, columns = [], dtypes = {}):
         shape = len(dataframe),
         dtype = dtype_dict)
     # Insert values from dataframe columns into numpy labels
-    for column in columns:
-        print(f"column {column} input shape {numpy_buffer[column].shape} 
-                                output shape {dataframe[column].to_numpy().shape}")
-        numpy_buffer[column] = dataframe[column].to_numpy()
+    for col in columns:
+        print(f"column {col} input shape {numpy_buffer[col].shape} output shape {dataframe[col].to_numpy().shape}")
+        numpy_buffer[col] = dataframe[col].to_numpy()
     # Return results of conversion
     return numpy_buffer
 
@@ -57,11 +58,11 @@ proc_dict={
     "GluGluToHH": 8  
 }
 
-if "proc" in events.fields(): #SnT style parquet
+if "proc" in events.fields: #SnT style parquet
   events = ak.with_field(events, [ proc_dict.get(proc) for proc in events["proc"].to_list()] , "process_id")
-  needed_fields=["mass","weight","score_GluGluToHH ","process_id"]
+  needed_fields=["mass","weight","score_GluGluToHH","process_id"]
 
-elif "sample" in events.fields(): #NW style parquet
+elif "sample" in events.fields: #NW style parquet
   events = ak.with_field(events, [ proc_dict.get(proc) for proc in events["sample"].to_list()] , "process_id")
   needed_fields=["pt","mass","weight_tot","signleH_dnn_new","ddbkg_dnn","process_id"]
 else:

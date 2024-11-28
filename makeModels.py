@@ -1,8 +1,9 @@
 import ROOT
 ROOT.gROOT.SetBatch(True)
-from tdrStyle import *
+from plotting.tdrStyle import *
 setTDRStyle()
 
+ROOT.gSystem.AddIncludePath("-I$COMBINE_BASE/ ")
 ROOT.gSystem.Load("$COMBINE_BASE/build/lib/libHiggsAnalysisCombinedLimit.so")
 ROOT.gSystem.AddIncludePath("-I$ROOFITSYS/include")
 ROOT.gSystem.AddIncludePath("-Iinclude/")
