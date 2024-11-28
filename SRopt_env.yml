@@ -1,4 +1,4 @@
-name: combine
+name: SRopt
 channels:
   - conda-forge
 dependencies:
