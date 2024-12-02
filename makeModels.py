@@ -62,7 +62,7 @@ class makeModel():
         h_mgg = ROOT.TH1F("h_mgg", "h_mgg", 320, 100, 180)
         h_mgg.Sumw2()
 
-        #print("[MAKEMODELS] Info: h_mgg name: %s, var: %s, weightVar: %s, selection: %s" % (h_mgg.GetName(), self.var, self.weightVar, self.selection))
+        #print("[makeModels.py] Info: h_mgg name: %s, var: %s, weightVar: %s, selection: %s" % (h_mgg.GetName(), self.var, self.weightVar, self.selection))
 
         self.tree.Project(h_mgg.GetName(), self.var, self.weightVar + "*(" + self.selection + ")")
         d_mgg = ROOT.RooDataHist("roohist_data_mass_" + self.tag, "", ROOT.RooArgList(w.var(rooVar)), h_mgg, 1)
@@ -157,7 +157,7 @@ class makeModel():
         h_mgg = ROOT.TH1F("h_mgg", "h_mgg", 320, 100, 180)
         h_mgg.Sumw2()
 
-        print("[MAKEMODELS] Info: h_mgg name: %s, var: %s, weightVar: %s, selection: %s" % (h_mgg.GetName(), self.var, self.weightVar, self.selection))
+        print("[makeModels.py] Info: h_mgg name: %s, var: %s, weightVar: %s, selection: %s" % (h_mgg.GetName(), self.var, self.weightVar, self.selection))
 
         self.tree.Project(h_mgg.GetName(), self.var, self.weightVar + "*(" + self.selection + ")") 
         d_mgg = ROOT.RooDataHist("roohist_data_mass_" + datasetTag, "", ROOT.RooArgList(w.var(rooVar)), h_mgg, 1)
@@ -189,7 +189,6 @@ class makeModel():
 
         frame = w.var(rooVar).frame()
         d_mgg.plotOn(frame, ROOT.RooFit.Binning(80), ROOT.RooFit.CutRange("SL,SU"))
-        d_mgg.plotOn(frame, ROOT.RooFit.Binning(80))
         w.pdf(self.tag+"_ext").plotOn(frame)
 
         c1 = ROOT.TCanvas("c1", "c1", 800, 800)
