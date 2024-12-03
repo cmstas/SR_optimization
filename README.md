@@ -2,7 +2,7 @@
 
 SR optimization code borrowed from ttH & ttHH analyses. Updated to get rid of python2, root_numpy and CMSSW based combine dependencies.
 
-Right now it is working only on UAF machines!
+It should work also elsewhere, but right now the scripts have been tested only on UAF machines!
 
 ## Installation
 
