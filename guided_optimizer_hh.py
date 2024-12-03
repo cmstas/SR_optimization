@@ -18,7 +18,7 @@ from scanClass import scanClass
 from makeModels import makeModel
 from cardMaker import makeCards
 
-process_dict = { ##TODO Fix this stupidity!
+process_dict = { ##TODO Fix the need for numerical idx
   
     "data" : [0],
     "ggHH" : [8],
@@ -39,6 +39,7 @@ class Guided_Optimizer():
         self.tag    =   kwargs.get('tag', '')
         self.channel = kwargs.get('channel',"HHggbb")
         self.diagnostic_mode = kwargs.get('diagnostic_mode', False)
+        self.plotpath = kwargs.get('plotPath',None)
         self.minSBevnts = kwargs.get('minSBevents',5.)
         self.mvas   =   kwargs.get('mvas', { "1d" : ["mva_score"], "2d" : ["mva_smhiggs_score", "mva_nonres_score"] }) 
         self.weight_var = kwargs.get('weight_var',"weight")
@@ -93,10 +94,14 @@ class Guided_Optimizer():
                                 'nthread' : 12, 
                             })
 
-        user = getpass.getuser() 
+        user = os.getlogin()
         current_dir = os.getcwd()
         self.modelpath = current_dir + "/models/" + self.tag
-        self.plotpath = ("/home/users/%s/public_html/SRs_scan/" % user) + self.tag
+        if self.plotpath == None:
+          if "uaf" in os.uname().nodename:
+            self.plotpath = f"/home/users/{user}/public_html/SRs_scan/"+ self.tag
+          else:
+            print ("[GUIDED OPTIMIZER] No directory for storing the fit plots provided! Do you want to continue?")
         self.scanConfig = kwargs.get('scanConfig', { "tag": self.channel,
                                                      "filename" : self.input,
                                                      "selection" : "",
@@ -626,7 +631,7 @@ class Guided_Optimizer():
     def base_selection(self):
         if self.pt_selection == "":
             # return "(mass > 100 & mass < 180 & train_label == 2) "
-            return "(mass > 100) & (mass < 180) " # right now we use the full dataset so don't care for the label
+            return "(mass > 100) & (mass < 180)" # right now we use the full dataset so don't care for the label
         else:
             return "(mass > 100) & (mass < 180) & (train_label == 2) & (%s) " % self.pt_selection
 

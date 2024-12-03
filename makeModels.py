@@ -40,7 +40,7 @@ class makeModel():
         self.tree = self.file.Get(self.treename)
 
 
-    def cleanDir(self):
+    def cleanDir(self): #not used. One can decide to overwrite the output directories when using the same tag
 
         pathCmd =  "mkdir -p " + self.modelpath + ";"
         pathCmd += "rm " + self.modelpath+ "*;"
@@ -102,37 +102,38 @@ class makeModel():
         w.pdf(self.tag).plotOn(frame)
 
         # plot
-        c1 = ROOT.TCanvas("c1", "c1", 800, 800)
-        dummy = ROOT.TH1D("dummy","dummy",1,100,180)
-        dummy.SetMinimum(0)
-        dummy.SetMaximum(h_mgg.GetMaximum()*1.2)
-        dummy.SetLineColor(0)
-        dummy.SetMarkerColor(0)
-        dummy.SetLineWidth(0)
-        dummy.SetMarkerSize(0)
-        dummy.GetYaxis().SetTitle("Events")
-        dummy.GetYaxis().SetTitleOffset(1.3)
-        dummy.GetXaxis().SetTitle("m_{#gamma#gamma} (GeV)")
-        dummy.Draw()
+        if self.plotpath:
+          c1 = ROOT.TCanvas("c1", "c1", 800, 800)
+          dummy = ROOT.TH1D("dummy","dummy",1,100,180)
+          dummy.SetMinimum(0)
+          dummy.SetMaximum(h_mgg.GetMaximum()*1.2)
+          dummy.SetLineColor(0)
+          dummy.SetMarkerColor(0)
+          dummy.SetLineWidth(0)
+          dummy.SetMarkerSize(0)
+          dummy.GetYaxis().SetTitle("Events")
+          dummy.GetYaxis().SetTitleOffset(1.3)
+          dummy.GetXaxis().SetTitle("m_{#gamma#gamma} (GeV)")
+          dummy.Draw()
 
-        latex = ROOT.TLatex()
-        latex.SetNDC()
-        latex.SetTextSize(0.6*c1.GetTopMargin())
-        latex.SetTextFont(42)
-        latex.SetTextAlign(11)
-        latex.SetTextColor(1)
+          latex = ROOT.TLatex()
+          latex.SetNDC()
+          latex.SetTextSize(0.6*c1.GetTopMargin())
+          latex.SetTextFont(42)
+          latex.SetTextAlign(11)
+          latex.SetTextColor(1)
 
-        latex.DrawLatex(0.5, 0.85, (self.tag.split("_"))[-2] + "_" + (self.tag.split("_"))[-1])
-        latex.DrawLatex(0.5, 0.78, "mean = " + str(round(w.var("mean_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("mean_"+self.tag).getError(), 3) ))
-        latex.DrawLatex(0.5, 0.71, "sigma = " + str(round(w.var("sigma_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("sigma_"+self.tag).getError(), 3) ))
-        latex.DrawLatex(0.5, 0.64, "a1 = " + str(round(w.var("a1_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("a1_"+self.tag).getError(), 3) ))
-        latex.DrawLatex(0.5, 0.57, "a2 = " + str(round(w.var("a2_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("a2_"+self.tag).getError(), 3) ))
-        latex.DrawLatex(0.5, 0.50, "n1 = " + str(round(w.var("n1_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("n1_"+self.tag).getError(), 3) ))
-        latex.DrawLatex(0.5, 0.43, "n2 = " + str(round(w.var("n2_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("n2_"+self.tag).getError(), 3) ))
+          latex.DrawLatex(0.5, 0.85, (self.tag.split("_"))[-2] + "_" + (self.tag.split("_"))[-1])
+          latex.DrawLatex(0.5, 0.78, "mean = " + str(round(w.var("mean_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("mean_"+self.tag).getError(), 3) ))
+          latex.DrawLatex(0.5, 0.71, "sigma = " + str(round(w.var("sigma_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("sigma_"+self.tag).getError(), 3) ))
+          latex.DrawLatex(0.5, 0.64, "a1 = " + str(round(w.var("a1_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("a1_"+self.tag).getError(), 3) ))
+          latex.DrawLatex(0.5, 0.57, "a2 = " + str(round(w.var("a2_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("a2_"+self.tag).getError(), 3) ))
+          latex.DrawLatex(0.5, 0.50, "n1 = " + str(round(w.var("n1_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("n1_"+self.tag).getError(), 3) ))
+          latex.DrawLatex(0.5, 0.43, "n2 = " + str(round(w.var("n2_"+self.tag).getVal(), 3) ) + " #pm " + str(round(w.var("n2_"+self.tag).getError(), 3) ))
 
-        frame.Draw("same")
-        c1.SaveAs(self.plotpath + "/fit_sig_" + self.savename + ".png")
-        c1.SaveAs(self.plotpath + "/fit_sig_" + self.savename + ".pdf")
+          frame.Draw("same")
+          c1.SaveAs(self.plotpath + "/fit_sig_" + self.savename + ".png")
+          c1.SaveAs(self.plotpath + "/fit_sig_" + self.savename + ".pdf")
 
         if fixParameters:
            w.var("mean_"+self.tag).setConstant()
@@ -191,34 +192,36 @@ class makeModel():
         d_mgg.plotOn(frame, ROOT.RooFit.Binning(80), ROOT.RooFit.CutRange("SL,SU"))
         w.pdf(self.tag+"_ext").plotOn(frame)
 
-        c1 = ROOT.TCanvas("c1", "c1", 800, 800)
-        dummy = ROOT.TH1D("dummy","dummy",1,100,180)
-        dummy.SetMinimum(0)
-        dummy.SetMaximum(h_mgg.GetMaximum()*1.2*4)
-        dummy.SetLineColor(0)
-        dummy.SetMarkerColor(0)
-        dummy.SetLineWidth(0)
-        dummy.SetMarkerSize(0)
-        dummy.GetYaxis().SetTitle("Events")
-        dummy.GetYaxis().SetTitleOffset(1.3)
-        dummy.GetXaxis().SetTitle("m_{#gamma#gamma} (GeV)")
-        dummy.Draw()
+        #plot
+        if self.plotpath:
+          c1 = ROOT.TCanvas("c1", "c1", 800, 800)
+          dummy = ROOT.TH1D("dummy","dummy",1,100,180)
+          dummy.SetMinimum(0)
+          dummy.SetMaximum(h_mgg.GetMaximum()*1.2*4)
+          dummy.SetLineColor(0)
+          dummy.SetMarkerColor(0)
+          dummy.SetLineWidth(0)
+          dummy.SetMarkerSize(0)
+          dummy.GetYaxis().SetTitle("Events")
+          dummy.GetYaxis().SetTitleOffset(1.3)
+          dummy.GetXaxis().SetTitle("m_{#gamma#gamma} (GeV)")
+          dummy.Draw()
 
-        frame.Draw("same")
+          frame.Draw("same")
 
-        latex = ROOT.TLatex()
-        latex.SetNDC()
-        latex.SetTextSize(0.6*c1.GetTopMargin())
-        latex.SetTextFont(42)
-        latex.SetTextAlign(11)
-        latex.SetTextColor(1)
+          latex = ROOT.TLatex()
+          latex.SetNDC()
+          latex.SetTextSize(0.6*c1.GetTopMargin())
+          latex.SetTextFont(42)
+          latex.SetTextAlign(11)
+          latex.SetTextColor(1)
 
-        latex.DrawLatex(0.4, 0.85, (self.tag.split("_"))[-2] + "_" + (self.tag.split("_"))[-1])
-        latex.DrawLatex(0.4, 0.78, "nEvents = " + str(round(w.var("nevt").getVal(), 3) ) + " #pm " + str(round(w.var("nevt").getError(), 3) ))
-        latex.DrawLatex(0.4, 0.71, "#tau = " + str(round(w.var("tau").getVal(), 3) ) + " #pm " + str(round(w.var("tau").getError(), 3) ))
+          latex.DrawLatex(0.4, 0.85, (self.tag.split("_"))[-2] + "_" + (self.tag.split("_"))[-1])
+          latex.DrawLatex(0.4, 0.78, "nEvents = " + str(round(w.var("nevt").getVal(), 3) ) + " #pm " + str(round(w.var("nevt").getError(), 3) ))
+          latex.DrawLatex(0.4, 0.71, "#tau = " + str(round(w.var("tau").getVal(), 3) ) + " #pm " + str(round(w.var("tau").getError(), 3) ))
 
-        c1.SaveAs(self.plotpath + "/fit_bkg_" + self.savename + ".png")
-        c1.SaveAs(self.plotpath + "/fit_bkg_" + self.savename + ".pdf")
+          c1.SaveAs(self.plotpath + "/fit_bkg_" + self.savename + ".png")
+          c1.SaveAs(self.plotpath + "/fit_bkg_" + self.savename + ".pdf")
 
         nEvt = w.var("nevt").getVal()
 

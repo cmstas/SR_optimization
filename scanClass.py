@@ -53,7 +53,7 @@ class scanClass():
         print (efficiency)
         return efficiency
 
-    def cleanDir(self):
+    def cleanDir(self): #not used. One can decide to overwrite the output directories when using the same tag
 
         pathCmd =  "mkdir -p " + self.modelpath + ";"
         pathCmd += "rm " + self.modelpath+ "*;"

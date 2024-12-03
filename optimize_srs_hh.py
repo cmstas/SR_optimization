@@ -5,6 +5,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--tag", help = "tag to distinguish this optimization", type=str, default = "test")
 parser.add_argument("--file", help = "path to final fit tree", type=str)
 parser.add_argument("--coupling", help = "which signal you want", type=str)
+parser.add_argument("--plotPath", help = "directory path to store the fit plots", type=str)
 parser.add_argument("--mvas", help = "csv list of mvas for SR optimization",type=str, default = "mva_score")
 parser.add_argument("--weight", help = "name of the weight field to be used",type=str, default = "weight")
 parser.add_argument("--sm_higgs_unc", help = "value of unc on sm higgs processes", type=float, default = 0.1)
@@ -52,6 +53,7 @@ optimizer = guided_optimizer.Guided_Optimizer(
                 strategies = ['guided'],
                 minSBevents = args.minSB_events,
                 diagnostic_mode=args.dry_run,
+                plotPath = args.plotPath,
                 # when providing ext SRS in 2d boundaries are:
                 # mva1_bin0,mva1_bin1,mva2_bin0,mva2_bin1 
                 extSRs = [0.9,0.8,0.9,0.9],
