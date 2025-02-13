@@ -2,12 +2,11 @@
 
 input=/home/users/iareed/HiggsDNA/pre_app_all_local/
 fggff=/home/users/iareed/CMSSW_10_2_13/src/flashggFinalFit/
-tag="Run3_env"
+tag="Run3_env_test"
 mva_name="SM_mva_score"
 sr1=0.99
 sr2=0.96
-python convert_parquet_to_root.py --input "$input" --FggFF "$fggff" --tag "$tag" --mvas $sr1 $sr2 --mva_name "$mva_name" #--unblind
-#python convert_HiggsDNA_to_FggFF.py --input "$input" --FggFF "$fggff" --tag "$tag" --mvas $sr1 $sr2 --mva_name "$mva_name" #--unblind
+python HiggsDNA_to_FggFF.py --input "$input" --FggFF "$fggff" --tag "$tag" --mvas $sr1 $sr2 --mva_name "$mva_name" #--unblind
 
 # Example for processing interpreations with multiple trainings/mass points
 #declare -A sr1_edges=(

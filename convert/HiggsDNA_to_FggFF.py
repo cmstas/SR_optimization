@@ -26,7 +26,7 @@ parser.add_argument(
     "--tag",
     help = "unique tag to identify batch of processed samples",
     type = str,
-    default = "SM_22Sep23_with_tH"
+    default = "Run3_env_test"
 )
 parser.add_argument(
     "--mva_name",
@@ -39,7 +39,7 @@ parser.add_argument(
     nargs="*",
     help = "mva limits to SRs",
     type = float,
-    default = [0.969541,0.9899]
+    default = [0.99,0.9]
 )
 parser.add_argument(
     "--unblind",
