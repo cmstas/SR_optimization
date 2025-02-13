@@ -105,7 +105,9 @@ procs_id_map = procs_id_map["sample_id_map"]
 
 needed_fields=['CMS_hgg_mass','weight_central','process_id']
 years = ['2017','2018']
-procs = ['ttHH_ggbb','ttH_M125']
+procs = {'ttHH_ggbb':'ttHH_ggbb',
+         'ttH_M125':'ttH'
+        }
 
 print('Started Processing Data')
 df = ak.from_parquet(str(args.input)+'merged_nominal.parquet')
@@ -206,17 +208,17 @@ for f_in in files:
                 df_sr = df_year[sr_mask & peak_mask]
             df_sr = df_sr[[f for f in df_sr.fields if f in needed_fields]]
 
-            for p in procs:
-                df_out = df_sr[df_sr.process_id==procs_id_map[p]] 
+            for old, new in procs.items():
+                df_out = df_sr[df_sr.process_id==procs_id_map[old]] 
                 df_out = to_tensor(df_out)
-                print(f'Adding {len(df_out)} entires to {p} {y} SR{sr+1}')
-                out_file = f'{out_dir}/{y}/{p}_125.38_13TeV.root'
+                print(f'Adding {len(df_out)} entires to {new} {y} SR{sr+1}')
+                out_file = f'{out_dir}/{y}/{new}_125.38_13TeV.root'
                 if os.path.isfile(out_file):
                     with uproot.update(out_file) as f_out:
-                        f_out[f'{p}_125.38_13TeV_SR{sr+1}{tag}'] = df_out
+                        f_out[f'{new}_125.38_13TeV_SR{sr+1}{tag}'] = df_out
                 else:
                     with uproot.recreate(out_file) as f_out:
-                        f_out[f'{p}_125.38_13TeV_SR{sr+1}{tag}'] = df_out
+                        f_out[f'{new}_125.38_13TeV_SR{sr+1}{tag}'] = df_out
     needed_fields = needed_fields[:-len(rename_syst.values())]
     print('----------------------------')
 print('All files processed')
