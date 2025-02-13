@@ -82,6 +82,14 @@ def to_tensor(dataframe, columns = [], dtypes = {}):
         numpy_buffer[col] = dataframe[col].to_numpy()
     return numpy_buffer
 
+def save_to_root(filePath, TTreeName, df):
+    if os.path.isfile(filePath):
+        with uproot.update(filePath) as f_out:
+            f_out[TTreeName] = df_sr
+    else:
+        with uproot.recreate(filePath) as f_out:
+            f_out[TTreeName] = df_sr
+
 # Format output directories
 out_dir = str(args.FggFF) + 'files_systs/' + str(args.tag) + '/'
 # Purge old files at save destination, set output structure
@@ -126,15 +134,9 @@ for sr in range(nSRs):
     df_sr = df_sr[[f for f in df_sr.fields if f in needed_fields]]
     df_sr = to_tensor(df_sr)
     print(f'Adding {len(df_sr)} events to allData SR{sr+1}')
-    if os.path.isfile(out_file):
-        with uproot.update(out_file) as f_out:
-            f_out[f'Data_13TeV_SR{sr+1}'] = df_sr
-    else:
-        with uproot.recreate(out_file) as f_out:
-            f_out[f'Data_13TeV_SR{sr+1}'] = df_sr
-print('Finished Processing Data')
+    save_to_root(out_file, f'Data_13TeV_SR{sr+1}', df_sr)
 print('------------------------')
- 
+
 print("Started Processing MC")
 # Second, open all the files and save a file per year per process with all the systematics
 files = glob.glob(str(args.input)+'/*.parquet')
@@ -213,12 +215,7 @@ for f_in in files:
                 df_out = to_tensor(df_out)
                 print(f'Adding {len(df_out)} entires to {new} {y} SR{sr+1}')
                 out_file = f'{out_dir}/{y}/{new}_125.38_13TeV.root'
-                if os.path.isfile(out_file):
-                    with uproot.update(out_file) as f_out:
-                        f_out[f'{new}_125.38_13TeV_SR{sr+1}{tag}'] = df_out
-                else:
-                    with uproot.recreate(out_file) as f_out:
-                        f_out[f'{new}_125.38_13TeV_SR{sr+1}{tag}'] = df_out
+                save_to_root(out_file, f'{new}_125.38_13TeV_SR{sr+1}{tag}', df_out)
     needed_fields = needed_fields[:-len(rename_syst.values())]
     print('----------------------------')
 print('All files processed')
