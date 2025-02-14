@@ -58,32 +58,45 @@ class makeCards():
                 self.processNames.append(process)
                 self.tagNames.append(tagList[i])
 
+                print(process)
                 if process == "data_obs":
                     self.inputRootNames.append("CMS-HGG_bkg_" + tagList[i] + postFix + ".root")
                     self.wsNames.append("wbkg_13p6TeV")
-                    self.modelNames.append("roohist_data_mass_" + tagList[i] + postFix)
+                    self.modelNames.append("roodataset_data_masses_" + tagList[i] + postFix) 
 
                 if ("hgg" in process) :
+                    print(process)
                     self.inputRootNames.append("CMS-HGG_sigfit_mva_" + process + "_" + tagList[i] + postFix + ".root")
                     self.wsNames.append("wsig_13p6TeV")
-                    self.modelNames.append("hggpdfsmrel_" + process + "_" + tagList[i] + postFix)
+                    self.modelNames.append("hggpdfsmrel_" + process + "_" + tagList[i] + postFix +"_2D")
 
                 if "bkg" in process:
                     self.inputRootNames.append("CMS-HGG_bkg_" + tagList[i] + postFix + ".root")
                     self.wsNames.append("wbkg_13p6TeV")
-                    self.modelNames.append("CMS_hgg_bkgshape_" + tagList[i] + postFix)
+                    self.modelNames.append("CMS_hgg_bkgshape_" + tagList[i] + postFix + "_2D")
 
 
     def WriteShapes(self):
 
-        if len(self.processNames) != len(self.tagNames) or len(self.processNames) != len(self.inputRootNames) or len(self.processNames) != len(self.wsNames) or len(self.processNames) != len(self.modelNames):
-            print (len(self.processNames), len(self.tagNames), len(self.inputRootNames), len(self.wsNames), len(self.modelNames))
+        lpN = len(self.processNames)
+        ltN = len(self.tagNames)
+        lirN = len(self.inputRootNames)
+        lwsN = len(self.wsNames)
+        lmN = len(self.modelNames)
+
+        if lpN != ltN or lpN != lirN or lpN != lwsN or lpN != lmN:
+            print (lpN, ltN, lirN, lwsN, lmN)
             print (self.processNames)
             print (self.inputRootNames)
             raise Exception('check n_quantiles and useNCores')
 
-        for i in range(len(self.processNames)):
-            self.txtfile.write("shapes " + self.processNames[i] + " " + self.tagNames[i] + " " + self.inputRootNames[i] + " " + self.wsNames[i] + ":" + self.modelNames[i] + "\n" )
+        for i in range(lpN):
+            if "hgg" in self.processNames[i]:
+                self.txtfile.write("shapes " + self.processNames[i] +"hbb" + " " + self.tagNames[i] + " " 
+                + self.inputRootNames[i] + " " + self.wsNames[i] + ":" + self.modelNames[i] + "\n" )
+            else:
+                self.txtfile.write("shapes " + self.processNames[i] + " " + self.tagNames[i] + " " 
+                + self.inputRootNames[i] + " " + self.wsNames[i] + ":" + self.modelNames[i] + "\n" )
         self.txtfile.write("------------\n")
 
 
@@ -113,7 +126,10 @@ class makeCards():
             for i in range(len(processes)):
 
                 bin_l1 += tag + " "
-                process_l2 += processes[i] + " "
+                if "hgg" in processes[i]: 
+                    process_l2 += processes[i] + "hbb "
+                else:
+                    process_l2 += processes[i] + " "
                 process_l3 += str( i+1-len(sigList) ) + " "
                 rate_l4 += "1.0 "
                 if processes[i] == "bkg_mass":

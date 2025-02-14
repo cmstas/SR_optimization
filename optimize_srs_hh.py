@@ -56,11 +56,13 @@ optimizer = guided_optimizer.Guided_Optimizer(
                 plotPath = args.plotPath,
                 # when providing ext SRS in 2d boundaries are:
                 # mva1_bin0,mva1_bin1,mva2_bin0,mva2_bin1 
-                extSRs = [0.9,0.8,0.9,0.9],
-               
-                initial_points = 36,
+                # extSRs = [0.9,0.8,0.9,0.9],
+                extSRs = [0.9],
+                # extSRs = [0.997317, 0.994629, 0.93262,0.516248],
+                # extSRS=[0],
+                initial_points = 72,
                 points_per_epoch = 36,
-                n_epochs = 5,
+                n_epochs = 4,
                 verbose = True
 )
 

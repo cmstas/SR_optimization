@@ -51,7 +51,7 @@ def to_tensor(dataframe, columns = [], dtypes = {}):
 
 
 events = ak.from_parquet(args.input)
-
+# events=events[(events.lead_bjet_btagPNetB>0.26) & (events.sublead_bjet_btagPNetB>0.26)] #testing a manual Btag cut
 # For the time being, we have to match processes into integers. Will need to modify the SR opt FIXME  
 proc_dict={
     "Data_EraE": 0, "Data_EraF": 0, "Data_EraG": 0, "Data": 0,
@@ -62,11 +62,14 @@ proc_dict={
 
 if "proc" in events.fields: #SnT style parquet
   events = ak.with_field(events, [ proc_dict.get(proc) for proc in events["proc"].to_list()] , "process_id")
-  needed_fields=["mass","weight","score_GluGluToHH","process_id"]
+  needed_fields=["mass","weight","nonRes_dijet_mass", "nonRes_dijet_mass_PNet_all" ,
+                 "nonRes_dijet_mass_PNet_mass_uncorr","weight_tot","abcd_pred","score_GluGluToHH",
+                 "singleH_tagger","process_id"]
 
 elif "sample" in events.fields: #NW style parquet
   events = ak.with_field(events, [ proc_dict.get(proc) for proc in events["sample"].to_list()] , "process_id")
-  needed_fields=["pt","mass","weight_tot","signleH_dnn_new","ddbkg_dnn","process_id"]
+  needed_fields=["pt","mass","weight_tot","abcd_pred","signleH_dnn_new","score_GluGluToHH","singleH_pred","ddbkg_dnn",
+                 "process_id"]
 else:
     sys.exit("[Parquet2root] Parquet format not supported (no proc or sample field found)")
     

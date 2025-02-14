@@ -22,8 +22,12 @@ process_dict = { ##TODO Fix the need for numerical idx
   
     "data" : [0],
     "ggHH" : [8],
-    "bkg" : [5,6],
-    "sm_higgs" : [1,2,3,4]
+    "bkg" : [0],
+    # "sm_higgs" : [1,2,3,4]
+    "ggFH": [1],
+    "ttH": [2],
+    "VBFH": [3],
+    "VH": [4],
 }
 
 
@@ -64,7 +68,8 @@ class Guided_Optimizer():
         elif self.coupling == "ttHH":
             self.signal = ["ttHH"]
         
-        self.resonant_bkgs = kwargs.get('resonant_bkgs', ['sm_higgs'])
+        # self.resonant_bkgs = kwargs.get('resonant_bkgs', ['sm_higgs'])
+        self.resonant_bkgs = kwargs.get('resonant_bkgs', ["ggFH","ttH","VBFH","VH"])
         
         self.points_per_epoch = kwargs.get('points_per_epoch', 200)
         self.initial_points = kwargs.get('initial_points', 48)
@@ -646,13 +651,13 @@ class Guided_Optimizer():
             yields[bin] = {}
             for process in self.signal + self.resonant_bkgs:
                 signalModelConfig = {
-                    "var" : "mass", "weightVar" : self.weight_var,
+                    "var" : ["mass","nonRes_dijet_mass_PNet_all"], "weightVar" : self.weight_var,
                     "plotpath" : self.scanConfig["plotpath"],
                     "modelpath" : self.scanConfig["modelpath"],
                     "filename" : self.input,
                     "savename" : "CMS-HGG_sigfit_mva_"+ process +"_hgg_"+ self.channel +"_"+ str(i) +"_"+ str(idx),
                     "tag" : "hggpdfsmrel_" + process + "_hgg_" + self.channel +"_"+ str(i) + "_" + str(idx),
-                    "selection" : self.base_selection() +"&"+ self.process_selection(process) +" & ("+ selection[i] +")",
+                    "selection" : self.base_selection() +"&"+self.process_selection(process) +" & ("+ selection[i] +")",
                 }
                 if "ggH" in self.resonant_bkgs[0]:
                     simple = True # Only ggH, fit a single gaussian
@@ -660,13 +665,13 @@ class Guided_Optimizer():
                     simple = False
                 model = makeModel(signalModelConfig)
                 model.getTree(self.scanner.getTree())
-                sig_yield = model.makeSignalModel("wsig_13p6TeV",
+                sig_yield = model.makeSignalModel2D("wsig_13p6TeV",
                         { "replaceNorm" : False, "norm_in" : -1, "fixParameters" : True , "simple" : simple},
                 )
                 yields[bin][process] = sig_yield                
 
             bkgModelConfig = {
-                "var" : "mass", "weightVar" : self.weight_var,
+                "var" : ["mass","nonRes_dijet_mass_PNet_all"], "weightVar" : self.weight_var,
                 "plotpath" : self.scanConfig["plotpath"],
                 "modelpath" : self.scanConfig["modelpath"],
                 "filename" : self.input,
@@ -677,13 +682,13 @@ class Guided_Optimizer():
 
             model = makeModel(bkgModelConfig)
             model.getTree(self.scanner.getTree())
-            bkg_yield, bkg_yield_full, bkg_yield_raw = model.makeBackgroundModel("wbkg_13p6TeV", self.channel +"_"+ str(i) + "_" + str(idx))
+            bkg_yield, bkg_yield_full, bkg_yield_raw = model.makeBackgroundModel2D("wbkg_13p6TeV", self.channel +"_"+ str(i) + "_" + str(idx))
 
             bkgModelConfig["selection"] = self.base_selection() + "&" + self.process_selection("data") + " & (" + selection[i] + ")"
             bkgModelConfig["savename"] = "dummy"
             model2 = makeModel(bkgModelConfig)
             model2.getTree(self.scanner.getTree())
-            bkg_yield_data, bkg_yield_data_full, bkg_yield_raw_data = model2.makeBackgroundModel("wdata_13p6TeV",self.channel +"_"+ str(i) + "_" + str(idx) + "dummy")
+            bkg_yield_data, bkg_yield_data_full, bkg_yield_raw_data = model2.makeBackgroundModel2D("wdata_13p6TeV",self.channel +"_"+ str(i) + "_" + str(idx) + "dummy")
 
             yields[bin]["bkg"] = bkg_yield
             if bkg_yield_raw < self.minSBevnts or bkg_yield_raw_data < self.minSBevnts:
