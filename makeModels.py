@@ -66,7 +66,7 @@ class makeModel():
 
         #print("[makeModels.py] Info: h_mgg name: %s, var: %s, weightVar: %s, selection: %s" % (h_mgg.GetName(), self.var, self.weightVar, self.selection))
 
-        self.tree.Project(h_mgg.GetName(), self.var, self.weightVar + "*(" + self.selection + ")")
+        self.tree.Project(h_mgg.GetName(), self.var[0], self.weightVar + "*(" + self.selection + ")")
         d_mgg = ROOT.RooDataHist("roohist_data_mass_" + self.tag, "", ROOT.RooArgList(w.var(rooVar)), h_mgg, 1)
         #print "bin dataset", h_mgg.Integral(), d_mgg.sumEntries(), d_mgg.numEntries()
        
@@ -400,7 +400,7 @@ class makeModel():
                                                                                                self.weightVar, 
                                                                                                self.selection))
 
-        self.tree.Project(h_mgg.GetName(), self.var, self.weightVar + "*(" + self.selection + ")") 
+        self.tree.Project(h_mgg.GetName(), self.var[0], self.weightVar + "*(" + self.selection + ")") 
         d_mgg = ROOT.RooDataHist("roohist_data_mass_" + datasetTag, "", ROOT.RooArgList(w.var(rooVar)), h_mgg, 1)
         print ("bin dataset", h_mgg.Integral(), d_mgg.sumEntries(), d_mgg.numEntries())
 

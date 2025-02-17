@@ -12,7 +12,6 @@ class makeCards():
     def __init__(self, savepath, cardname, config={}):
 
         self.cardname = savepath + "/" + cardname #"CMS-HGG_mva_13p6TeV_datacard.txt"
-        print (self.cardname)
         self.txtfile =  open(self.cardname, "w")
 
         #some lists
@@ -23,6 +22,8 @@ class makeCards():
         self.modelNames = []
 
         self.path = savepath
+
+        self.dim = config["dim"]
 
         if "sm_higgs_unc" in config.keys():
             self.sm_higgs_unc = config["sm_higgs_unc"]
@@ -58,22 +59,29 @@ class makeCards():
                 self.processNames.append(process)
                 self.tagNames.append(tagList[i])
 
-                print(process)
                 if process == "data_obs":
                     self.inputRootNames.append("CMS-HGG_bkg_" + tagList[i] + postFix + ".root")
                     self.wsNames.append("wbkg_13p6TeV")
-                    self.modelNames.append("roodataset_data_masses_" + tagList[i] + postFix) 
+                    if self.dim > 1:
+                        self.modelNames.append("roodataset_data_masses_" + tagList[i] + postFix) 
+                    else:
+                      self.modelNames.append("roohist_data_mass_" + tagList[i] + postFix)
 
                 if ("hgg" in process) :
-                    print(process)
                     self.inputRootNames.append("CMS-HGG_sigfit_mva_" + process + "_" + tagList[i] + postFix + ".root")
                     self.wsNames.append("wsig_13p6TeV")
-                    self.modelNames.append("hggpdfsmrel_" + process + "_" + tagList[i] + postFix +"_2D")
+                    if self.dim > 1:
+                        self.modelNames.append("hggpdfsmrel_" + process + "_" + tagList[i] + postFix +"_2D")
+                    else:
+                        self.modelNames.append("hggpdfsmrel_" + process + "_" + tagList[i] + postFix )
 
                 if "bkg" in process:
                     self.inputRootNames.append("CMS-HGG_bkg_" + tagList[i] + postFix + ".root")
                     self.wsNames.append("wbkg_13p6TeV")
-                    self.modelNames.append("CMS_hgg_bkgshape_" + tagList[i] + postFix + "_2D")
+                    if self.dim > 1:
+                        self.modelNames.append("CMS_hgg_bkgshape_" + tagList[i] + postFix + "_2D")
+                    else:
+                        self.modelNames.append("CMS_hgg_bkgshape_" + tagList[i] + postFix)
 
 
     def WriteShapes(self):
@@ -92,8 +100,12 @@ class makeCards():
 
         for i in range(lpN):
             if "hgg" in self.processNames[i]:
-                self.txtfile.write("shapes " + self.processNames[i] +"hbb" + " " + self.tagNames[i] + " " 
-                + self.inputRootNames[i] + " " + self.wsNames[i] + ":" + self.modelNames[i] + "\n" )
+                if self.dim > 1:
+                    self.txtfile.write("shapes "+self.processNames[i]+"hbb " + self.tagNames[i] + " " + 
+                                       self.inputRootNames[i] + " " + self.wsNames[i] + ":" + self.modelNames[i] + "\n")
+                else: 
+                    self.txtfile.write("shapes "+self.processNames[i]+" " + self.tagNames[i] + " " +
+                                       self.inputRootNames[i] + " " + self.wsNames[i] + ":" + self.modelNames[i] + "\n")
             else:
                 self.txtfile.write("shapes " + self.processNames[i] + " " + self.tagNames[i] + " " 
                 + self.inputRootNames[i] + " " + self.wsNames[i] + ":" + self.modelNames[i] + "\n" )
@@ -126,7 +138,7 @@ class makeCards():
             for i in range(len(processes)):
 
                 bin_l1 += tag + " "
-                if "hgg" in processes[i]: 
+                if "hgg" in processes[i] and self.dim > 1: 
                     process_l2 += processes[i] + "hbb "
                 else:
                     process_l2 += processes[i] + " "

@@ -12,6 +12,7 @@ parser.add_argument("--sm_higgs_unc", help = "value of unc on sm higgs processes
 parser.add_argument("--nCores", help = "number of cores to use", type=int, default = 18)
 parser.add_argument("--minSB_events", help = "minimum number of events in mgg sideband", type=float, default = 5.)
 parser.add_argument("--bins", help = "csv list of number of bins", type=str, default = "1,2,3,4,5")
+parser.add_argument("--dim", help = "1 = 1D 2 = 2D fit", type=int, default = "1")
 parser.add_argument("--metric", help = "What are you optimizing for? Possible metrics are: \n \
                     limit \n \
                     upper limit \n \
@@ -48,6 +49,7 @@ optimizer = guided_optimizer.Guided_Optimizer(
                 pt_selection = args.pt_selection,
 
                 n_bins = bins,
+                dim = args.dim,
                 mvas = mva_dict,
                 weight_var = args.weight,
                 strategies = ['guided'],
