@@ -661,7 +661,7 @@ class Guided_Optimizer():
                     "selection" : self.base_selection() +"&"+self.process_selection(process) +" & ("+ selection[i] +")",
                 }
                 if "ggH" in self.resonant_bkgs[0]:
-                    simple = True # Only ggH, fit a single gaussian
+                    simple = True #Only ggH, fit a single gaussian
                 else:
                     simple = False
                 model = makeModel(signalModelConfig)

@@ -185,6 +185,7 @@ class makeModel():
         self.tree.Project(h_mjj.GetName(), self.var[1], self.weightVar + "*(" + self.selection + ")")
         d_mgg = ROOT.RooDataHist("roohist_data_mass_" + self.tag, "", ROOT.RooArgList(w.var(rooVar_gg)), h_mgg, 1)
         d_mjj = ROOT.RooDataHist("roohist_data_mass_" + tag_mjj, "", ROOT.RooArgList(w.var(rooVar_jj)), h_mjj, 1)
+        # d_mjj_data   = ROOT.RooDataHist("roohist_data_mass_" + tag_mjj, "", ROOT.RooArgList(w.var(rooVar_jj)), h_mjj, 1)
         #print "bin dataset", h_mgg.Integral(), d_mgg.sumEntries(), d_mgg.numEntries()
        
         # normalization

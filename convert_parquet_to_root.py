@@ -64,12 +64,15 @@ if "proc" in events.fields: #SnT style parquet
   events = ak.with_field(events, [ proc_dict.get(proc) for proc in events["proc"].to_list()] , "process_id")
   needed_fields=["mass","weight","nonRes_dijet_mass", "nonRes_dijet_mass_PNet_all" ,
                  "nonRes_dijet_mass_PNet_mass_uncorr","weight_tot","abcd_pred","score_GluGluToHH",
-                 "singleH_tagger","process_id"]
+                 "pred_singleH","process_id"]
 
 elif "sample" in events.fields: #NW style parquet
   events = ak.with_field(events, [ proc_dict.get(proc) for proc in events["sample"].to_list()] , "process_id")
-  needed_fields=["pt","mass","weight_tot","abcd_pred","signleH_dnn_new","score_GluGluToHH","singleH_pred","ddbkg_dnn",
-                 "process_id"]
+  # needed_fields=["pt","mass","weight_tot","abcd_pred","signleH_dnn_new","score_GluGluToHH","singleH_pred","ddbkg_dnn",
+  #                "process_id"]
+  needed_fields=["mass","weight","nonRes_dijet_mass", "nonRes_dijet_mass_PNet_all" ,
+                 "nonRes_dijet_mass_PNet_mass_uncorr","weight_tot","abcd_pred","score_GluGluToHH",
+                 "pred_singleH","process_id"]
 else:
     sys.exit("[Parquet2root] Parquet format not supported (no proc or sample field found)")
     
