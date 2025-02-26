@@ -106,12 +106,7 @@ nSRs = len(args.mvas)
 args.mvas+=[99]
 args.mvas.sort(reverse=True)
 
-#TODO: Alter now that process names are in the parquet
-with open(str(args.input)+'/summary.json',"r") as f_in:
-    procs_id_map = json.load(f_in)
-procs_id_map = procs_id_map["sample_id_map"]
-
-needed_fields=['CMS_hgg_mass','weight_central','process_id']
+needed_fields=['CMS_hgg_mass','weight_central','process_id','proc']
 years = ['2017','2018']
 procs = {'ttHH_ggbb':'ttHH_ggbb',
          'ttH_M125':'ttH'
@@ -160,7 +155,9 @@ for f_in in files:
     if 'smear' in f_in.split("/")[-1]:
         tag = '_MCSmear' + tag
 
+    # Renaming for Mr. flashggFinalFit
     df['CMS_hgg_mass'] = df['Diphoton_mass']
+    # Train/test/validation splits
     df['weight'] = df['weight_central'] * 2
     df['weight_central'] = df['weight']
 
@@ -211,7 +208,7 @@ for f_in in files:
             df_sr = df_sr[[f for f in df_sr.fields if f in needed_fields]]
 
             for old, new in procs.items():
-                df_out = df_sr[df_sr.process_id==procs_id_map[old]] 
+                df_out = df_sr[df_sr.process==old] 
                 df_out = to_tensor(df_out)
                 print(f'Adding {len(df_out)} entires to {new} {y} SR{sr+1}')
                 out_file = f'{out_dir}/{y}/{new}_125.38_13TeV.root'
