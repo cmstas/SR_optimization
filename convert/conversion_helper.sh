@@ -2,7 +2,7 @@
 
 input=/home/users/iareed/HiggsDNA/pre_app_all_local/
 fggff=/home/users/iareed/CMSSW_10_2_13/src/flashggFinalFit/
-tag="Run3_env_test"
+tag="Run3_env_test_again"
 mva_name="SM_mva_score"
 sr1=0.99
 sr2=0.96

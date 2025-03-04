@@ -85,26 +85,10 @@ def to_tensor(dataframe, columns = [], dtypes = {}):
 def save_to_root(filePath, TTreeName, df):
     if os.path.isfile(filePath):
         with uproot.update(filePath) as f_out:
-            f_out[TTreeName] = df_sr
+            f_out[TTreeName] = df
     else:
         with uproot.recreate(filePath) as f_out:
-            f_out[TTreeName] = df_sr
-
-# Format output directories
-out_dir = str(args.FggFF) + 'files_systs/' + str(args.tag) + '/'
-# Purge old files at save destination, set output structure
-os.system("rm -rf %s"%(out_dir))
-
-os.system("mkdir -p %s"%(out_dir))
-os.system("mkdir -p %s/Data"%(out_dir))
-os.system("mkdir -p %s/2016"%(out_dir))
-os.system("mkdir -p %s/2017"%(out_dir))
-os.system("mkdir -p %s/2018"%(out_dir))
-
-# Organize binning
-nSRs = len(args.mvas)
-args.mvas+=[99]
-args.mvas.sort(reverse=True)
+            f_out[TTreeName] = df
 
 needed_fields=['CMS_hgg_mass','weight_central','process_id','proc']
 years = ['2017','2018']
@@ -112,9 +96,28 @@ procs = {'ttHH_ggbb':'ttHH_ggbb',
          'ttH_M125':'ttH'
         }
 
+# Format output directories
+out_dir = f'{args.FggFF}/files_systs/{args.tag}/'
+if os.path.isdir(out_dir):
+    print(f'Destination path {out_dir} already exits')
+    print('Change tag or remove directory')
+    quit()
+# Purge old files at save destination, set output structure
+os.system(f'rm -rf {out_dir}')
+
+os.system(f'mkdir -p {out_dir}')
+os.system(f'mkdir -p {out_dir}/Data')
+for year in years:
+    os.system(f'mkdir -p {out_dir}/{year}')
+    
+# Organize binning
+nSRs = len(args.mvas)
+args.mvas+=[99]
+args.mvas.sort(reverse=True)
+
 print('Started Processing Data')
 df = ak.from_parquet(str(args.input)+'merged_nominal.parquet')
-df = df[df.process_id == procs_id_map["Data"]]
+df = df[df.proc == "Data"]
 print(f'File contains {len(df)} total Data events')
 df['CMS_hgg_mass'] = df.Diphoton_mass
 
@@ -126,8 +129,7 @@ for sr in range(nSRs):
         df_sr = df[sr_mask]
     else:
         df_sr = df[sr_mask & peak_mask]
-    df_sr = df_sr[[f for f in df_sr.fields if f in needed_fields]]
-    df_sr = to_tensor(df_sr)
+    df_sr = to_tensor(df_sr, needed_fields)
     print(f'Adding {len(df_sr)} events to allData SR{sr+1}')
     save_to_root(out_file, f'Data_13TeV_SR{sr+1}', df_sr)
 print('------------------------')
@@ -205,11 +207,10 @@ for f_in in files:
                 df_sr = df_year[sr_mask]
             else:
                 df_sr = df_year[sr_mask & peak_mask]
-            df_sr = df_sr[[f for f in df_sr.fields if f in needed_fields]]
 
             for old, new in procs.items():
-                df_out = df_sr[df_sr.process==old] 
-                df_out = to_tensor(df_out)
+                df_out = df_sr[df_sr.proc==procs[old]] 
+                df_out = to_tensor(df_out, needed_fields)
                 print(f'Adding {len(df_out)} entires to {new} {y} SR{sr+1}')
                 out_file = f'{out_dir}/{y}/{new}_125.38_13TeV.root'
                 save_to_root(out_file, f'{new}_125.38_13TeV_SR{sr+1}{tag}', df_out)
