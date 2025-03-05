@@ -4,12 +4,14 @@ import numpy
 import awkward as ak
 import uproot
 import argparse
-import getpass
 
-import json
+needed_fields=['CMS_hgg_mass','weight_central','process_id','proc']
+years = ['2017','2018']
+procs = {'ttHH_ggbb':'ttHH_ggbb',
+         'ttH_M125':'ttH'
+        }
 
 parser = argparse.ArgumentParser()
-usr=getpass.getuser()
 parser.add_argument(
     "--input",
     help = "path to input parquet directory",
@@ -90,21 +92,13 @@ def save_to_root(filePath, TTreeName, df):
         with uproot.recreate(filePath) as f_out:
             f_out[TTreeName] = df
 
-needed_fields=['CMS_hgg_mass','weight_central','process_id','proc']
-years = ['2017','2018']
-procs = {'ttHH_ggbb':'ttHH_ggbb',
-         'ttH_M125':'ttH'
-        }
-
-# Format output directories
+# Make output directory
 out_dir = f'{args.FggFF}/files_systs/{args.tag}/'
 if os.path.isdir(out_dir):
     print(f'Destination path {out_dir} already exits')
     print('Change tag or remove directory')
     quit()
-# Purge old files at save destination, set output structure
-os.system(f'rm -rf {out_dir}')
-
+# Set output structure
 os.system(f'mkdir -p {out_dir}')
 os.system(f'mkdir -p {out_dir}/Data')
 for year in years:
