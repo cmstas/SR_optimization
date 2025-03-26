@@ -18,15 +18,15 @@ cd SR_optimization
 conda install --name base mamba # faster conda
 mamba env create -f SRopt_env.yml
 
-conda activate SRopt
+mamba activate SRopt
 pip install pyarrow==7.0.0 # For some reason I couldn't get mamba to install this version on the python 3.8 env that combine wants...
 
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 cd HiggsAnalysis/CombinedLimit
 source set_conda_env_vars.sh
 # Need to reactivate
-conda deactivate
-conda activate SRopt
+mamba deactivate
+mamba activate SRopt
 
 make CONDA=1 -j 12
 
